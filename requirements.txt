@@ -1,0 +1,12 @@
+streamlit
+opencv-python
+numpy
+scikit-image
+scikit-learn
+imbalanced-learn
+matplotlib
+seaborn
+pillow
+torch
+torchvision
+tensorflow
