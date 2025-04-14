@@ -1,8 +1,8 @@
-import streamlit as st 
+import streamlit as st  
 import os
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.models import load_model
+from keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array
 from PIL import Image
 import matplotlib.pyplot as plt
@@ -79,22 +79,23 @@ if st.sidebar.button("Load Pre-trained Model"):
     try:
         st.session_state.model = load_model('saved_models/glaucoma_model.h5')
         st.session_state.model_trained = True
-        st.sidebar.success("Model loaded!")
+        st.sidebar.success("✅ Model loaded successfully!")
     except Exception as e:
-        st.sidebar.error(f"Failed to load model: {str(e)}")
+        st.sidebar.error(f"❌ Failed to load model: {str(e)}")
 
 # Prediction
-if uploaded_file is not None and st.session_state.model_trained:
+if uploaded_file is not None:
+    if st.session_state.model_trained:
         try:
             # Preprocess the uploaded image
             image = Image.open(uploaded_file).resize((128, 128))
             image_array = img_to_array(image) / 255.0
             image_array = np.expand_dims(image_array, axis=0)
-    
+
             # Make predictions
             pred_prob = st.session_state.model.predict(image_array)[0][0]
             pred = 1 if pred_prob >= 0.5 else 0
-    
+
             # Display results
             if pred == 0:
                 st.error("⚠️ Glaucoma Detected")
@@ -102,16 +103,16 @@ if uploaded_file is not None and st.session_state.model_trained:
             else:
                 st.success("✅ No Glaucoma Detected")
                 st.info("Regular eye checkups are recommended for prevention.")
-    
-            # Display prediction confidence - SMALLER graph for landscape screen
-            fig, ax = plt.subplots(figsize=(2, 1))  # Adjusted figure size (width=2 inches, height=1 inch)
+
+            # Display prediction confidence
+            fig, ax = plt.subplots(figsize=(2, 1))
             ax.bar(['Glaucoma', 'Normal'], [1 - pred_prob, pred_prob], color=['red', 'green'])
             ax.set_ylabel('Probability', fontsize=8)
             ax.set_title('Prediction Confidence', fontsize=10)
             ax.tick_params(axis='both', labelsize=8)
             plt.tight_layout()
             st.pyplot(fig)
-    
+
         except Exception as e:
             st.error(f"Prediction failed: {str(e)}")
     else:
